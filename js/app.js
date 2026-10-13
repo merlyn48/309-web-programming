@@ -738,17 +738,17 @@ function renderInsights(year) {
   const txnCount     = txns.length;
 
   const insights = [
-    { value: fmt(totalIncome), label: 'Total Income' },
-    { value: fmt(totalExpense), label: 'Total Expenses' },
-    { value: fmt(Math.max(0, totalSaved)), label: 'Total Saved' },
-    { value: savRate + '%', label: 'Savings Rate' },
-    { value: fmt(avgMonthExp), label: 'Avg Monthly Expense' },
-    { value: txnCount, label: 'Total Transactions' },
+    { icon: 'bi bi-arrow-up-circle-fill', value: fmt(totalIncome), label: 'Total Income' },
+    { icon: 'bi bi-arrow-down-circle-fill', value: fmt(totalExpense), label: 'Total Expenses' },
+    { icon: 'bi bi-wallet2', value: fmt(Math.max(0, totalSaved)), label: 'Total Saved' },
+    { icon: 'bi bi-chart-line', value: savRate + '%', label: 'Savings Rate' },
+    { icon: 'bi bi-calendar-month', value: fmt(avgMonthExp), label: 'Avg Monthly Expense' },
+    { icon: 'bi bi-list', value: txnCount, label: 'Total Transactions' },
   ];
 
   el.innerHTML = insights.map(i => `
     <div class="insight-card">
-      <div class="insight-icon">${i.icon}</div>
+      <div class="insight-icon"><i class="${i.icon}"></i></div>
       <div class="insight-value">${i.value}</div>
       <div class="insight-label">${i.label}</div>
     </div>`).join('');
@@ -1006,6 +1006,7 @@ function escHtml(str) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
+
 
 window.openTxnModal    = openTxnModal;
 window.openBudgetModal = openBudgetModal;
