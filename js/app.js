@@ -91,7 +91,7 @@ function initNavigation() {
     overlay.addEventListener('click', closeSidebar);
     closeBtn.addEventListener('click', closeSidebar);
 
-    document.getElementById('quickAddBtn').addEventListener('click', () => openTxnModal());
+    document.getElementById('quickAddBtn')?.addEventListener('click', () => openTxnModal());
 }
 
 function closeSidebar() {
@@ -755,12 +755,40 @@ function renderInsights(year) {
 }
 
 function populateCategorySelects() {
-  const filterCat = document.getElementById('filterCategory');
-  filterCat.innerHTML = '<option value="all">All Categories</option>' +
-    Object.entries(CATEGORIES).map(([k,v]) => `<option value="${k}">${v.label}</option>`).join('');
+    const filterCat = document.getElementById('filterCategory');
 
-  updateTxnCategoryOptions('expense');
+    if (!filterCat) {
+        console.error('Category dropdown not found');
+        return;
+    }
+
+    const categories = [
+        ['food', 'Food & Dining'],
+        ['transport', 'Transport'],
+        ['shopping', 'Shopping'],
+        ['health', 'Health & Medical'],
+        ['entertainment', 'Entertainment'],
+        ['education', 'Education'],
+        ['utilities', 'Utilities'],
+        ['rent', 'Rent & Housing'],
+        ['personal', 'Personal Care'],
+        ['travel', 'Travel'],
+        ['salary', 'Salary'],
+        ['freelance', 'Freelance'],
+        ['investment', 'Investment'],
+        ['gift', 'Gift / Bonus'],
+        ['other', 'Other']
+    ];
+
+    filterCat.innerHTML =
+        '<option value="all">All Categories</option>' +
+        categories.map(([key, label]) =>
+            `<option value="${key}">${label}</option>`
+        ).join('');
+
+    updateTxnCategoryOptions('expense');
 }
+
 
 function updateTxnCategoryOptions(type) {
   const cats = type === 'income' ? INCOME_CATS : EXPENSE_CATS;
@@ -1010,5 +1038,5 @@ function escHtml(str) {
 
 window.openTxnModal    = openTxnModal;
 window.openBudgetModal = openBudgetModal;
-window.confirmDelete   = confirmDelete;l;
+window.confirmDelete   = confirmDelete;
 window.confirmDelete   = confirmDelete;
