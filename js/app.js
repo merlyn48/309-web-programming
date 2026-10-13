@@ -559,7 +559,7 @@ function renderBudgets() {
     else over++;
 
     return `
-      <div class="budget-card">
+      <div class="budget-card ${status === 'danger' ? 'budget-card-over' : ''}">
         <div class="budget-card-header">
           <div class="budget-cat-info">
             <div class="budget-cat-icon" style="background:${cat.bg};color:${cat.color}">
@@ -571,6 +571,7 @@ function renderBudgets() {
             </div>
           </div>
           <div class="budget-actions">
+            ${(status === 'danger' || status === 'warning') ? `<button class="action-btn analyze" title="Analyze spending" onclick="openBudgetAnalysis('${b.id}')"><i class="bi bi-graph-up"></i></button>` : ''}
             <button class="action-btn edit" title="Edit budget" onclick="openBudgetModal('${b.id}')"><i class="bi bi-pencil-fill"></i></button>
             <button class="action-btn del" title="Delete budget" onclick="confirmDelete('budget','${b.id}')"><i class="bi bi-trash3-fill"></i></button>
           </div>
@@ -584,10 +585,16 @@ function renderBudgets() {
         </div>
         <div class="budget-footer">
           <span class="budget-remaining ${status}">
-            ${status === 'danger' ? `${fmt(Math.abs(remaining))} over budget` : `${fmt(remaining)} remaining`}
+            ${status === 'danger' ? `<i class="bi bi-exclamation-circle-fill"></i> ${fmt(Math.abs(remaining))} over budget` : `${fmt(remaining)} remaining`}
           </span>
           <span>${pct.toFixed(0)}% used</span>
         </div>
+        ${(status === 'danger' || status === 'warning') ? `
+        <button class="budget-analyze-btn ${status}" onclick="openBudgetAnalysis('${b.id}')">
+          <i class="bi bi-graph-up-arrow"></i>
+          ${status === 'danger' ? 'Analyze Overspend & Get Tips' : 'View Analysis & Tips'}
+          <i class="bi bi-arrow-right"></i>
+        </button>` : ''}
       </div>`;
   }).join('');
 
@@ -824,6 +831,8 @@ function initModals() {
   });
 
   document.getElementById('addBudgetBtn').addEventListener('click', () => openBudgetModal());
+  document.getElementById('analysisModalClose')?.addEventListener('click', () => closeModal('budgetAnalysisModal'));
+  document.getElementById('budgetAnalysisModal')?.addEventListener('click', e => { if (e.target === document.getElementById('budgetAnalysisModal')) closeModal('budgetAnalysisModal'); });
 
   document.getElementById('deleteConfirmBtn').addEventListener('click', handleDelete);
 
@@ -1036,7 +1045,237 @@ function escHtml(str) {
 }
 
 
-window.openTxnModal    = openTxnModal;
-window.openBudgetModal = openBudgetModal;
-window.confirmDelete   = confirmDelete;
-window.confirmDelete   = confirmDelete;
+window.openTxnModal       = openTxnModal;
+window.openBudgetModal    = openBudgetModal;
+window.confirmDelete      = confirmDelete;
+window.openBudgetAnalysis = openBudgetAnalysis;
+
+// ─── BUDGET TIPS DATABASE ───────────────────────────────────────────────────
+const BUDGET_TIPS = {
+  food: [
+    { icon: 'bi-cart3', title: 'Meal Prep Weekly', text: 'Batch-cook on Sundays to cut daily food costs by up to 40%. Plan your menu before grocery shopping.' },
+    { icon: 'bi-phone', title: 'Use Grocery Apps', text: 'Apps like Zepto, Blinkit, and BigBasket offer cashback deals. Compare prices before buying.' },
+    { icon: 'bi-calendar-week', title: 'Set Restaurant Budget', text: 'Allocate a fixed amount for dining out each week. Cook at home at least 4–5 days to stay on track.' },
+    { icon: 'bi-tag-fill', title: 'Buy in Bulk', text: 'Purchase staples (rice, dal, oil) in bulk during sales. This can save 15–25% on grocery bills.' },
+  ],
+  transport: [
+    { icon: 'bi-train-front-fill', title: 'Switch to Metro/Bus', text: 'Public transport costs 5–10x less than cabs. A monthly pass can save you thousands.' },
+    { icon: 'bi-bicycle', title: 'Cycle Short Distances', text: 'For distances under 3km, cycling saves money and improves health. Zero fuel cost.' },
+    { icon: 'bi-people-fill', title: 'Carpool to Work', text: 'Share rides with colleagues. Split fuel and cab costs to reduce transport expenses by 50%.' },
+    { icon: 'bi-phone', title: 'Compare Cab Prices', text: 'Check Ola, Uber, and Rapido before booking. Price differences can be 20–30% for the same route.' },
+  ],
+  shopping: [
+    { icon: 'bi-clock-history', title: '24-Hour Rule', text: 'Wait 24 hours before any non-essential purchase. This eliminates most impulse buys.' },
+    { icon: 'bi-list-check', title: 'Make a Shopping List', text: 'Stick strictly to a list. Unplanned purchases account for 40%+ of shopping overspend.' },
+    { icon: 'bi-percent', title: 'Wait for Sales', text: 'Major sales (Big Billion Day, Amazon Sale) happen quarterly. Schedule big purchases around them.' },
+    { icon: 'bi-arrow-repeat', title: 'Try Secondhand First', text: 'OLX and Facebook Marketplace offer quality items at 40–70% less. Great for furniture, electronics.' },
+  ],
+  health: [
+    { icon: 'bi-shield-fill-check', title: 'Get Health Insurance', text: 'A ₹5–10 lakh cover costs ₹5,000–15,000/year and prevents catastrophic medical expenses.' },
+    { icon: 'bi-heart-fill', title: 'Preventive Care Saves Money', text: 'Annual check-ups cost less than treating illness. Prevention is always cheaper than cure.' },
+    { icon: 'bi-capsule', title: 'Buy Generic Medicines', text: 'Generic drugs are 40–80% cheaper and equally effective. Ask your doctor for generic alternatives.' },
+    { icon: 'bi-hospital', title: 'Compare Clinic Fees', text: 'Consultation fees vary widely. Government hospitals and community clinics offer quality care at lower cost.' },
+  ],
+  entertainment: [
+    { icon: 'bi-share-fill', title: 'Share Subscriptions', text: 'Split Netflix, Spotify, or Hotstar with family/friends. Plans allow multiple screens at no extra cost.' },
+    { icon: 'bi-collection-play', title: 'Free Streaming Platforms', text: 'YouTube, MX Player, and JioCinema offer tons of free content. Consider cancelling paid subs you rarely use.' },
+    { icon: 'bi-calendar-event', title: 'Set Monthly Fun Budget', text: 'Allocate a fixed fun fund. Once it\'s spent, opt for free activities — parks, libraries, home movie nights.' },
+    { icon: 'bi-gift', title: 'Look for Free Events', text: 'City events, open-air concerts, museum free days — check local listings for zero-cost entertainment.' },
+  ],
+  education: [
+    { icon: 'bi-mortarboard', title: 'Use Free Resources First', text: 'YouTube, Khan Academy, and Coursera audit mode are free. Check these before buying paid courses.' },
+    { icon: 'bi-currency-rupee', title: 'Wait for Coupon Sales', text: 'Udemy courses drop to ₹399–₹699 during sales. Never pay full price — sales happen every few weeks.' },
+    { icon: 'bi-book', title: 'Borrow Before Buying', text: 'Libraries, PDF repositories, and colleagues can lend books/materials. Check availability first.' },
+    { icon: 'bi-people', title: 'Join Study Groups', text: 'Shared subscriptions and pooled resources among study groups reduce per-person costs significantly.' },
+  ],
+  utilities: [
+    { icon: 'bi-lightning-charge', title: 'Switch to LED Bulbs', text: 'LED bulbs use 75% less energy than traditional bulbs and last 25x longer. ROI in under 6 months.' },
+    { icon: 'bi-thermometer-sun', title: 'AC Temperature Tips', text: 'Each degree below 24°C increases AC power by 6%. Set to 24–26°C for optimal savings.' },
+    { icon: 'bi-droplet', title: 'Fix Water Leaks Early', text: 'A dripping tap wastes 15 litres/day. Fixing leaks can cut water bills by 10–20%.' },
+    { icon: 'bi-wifi', title: 'Review Your Internet Plan', text: 'Check if you\'re paying for speed you don\'t use. Downgrading can save ₹200–500/month.' },
+  ],
+  rent: [
+    { icon: 'bi-house-check', title: 'Negotiate Rent Annually', text: 'Research market rates and negotiate before renewal. Tenants who negotiate save 5–15% on rent.' },
+    { icon: 'bi-people-fill', title: 'Consider a Flatmate', text: 'Sharing a 2BHK is significantly cheaper than a 1BHK alone. Costs can halve with one flatmate.' },
+    { icon: 'bi-geo-alt', title: 'Explore Nearby Areas', text: 'Moving 2–3 km further from prime areas can reduce rent by 20–30% with similar connectivity.' },
+    { icon: 'bi-tools', title: 'Negotiate Included Utilities', text: 'Ask for maintenance, water, or parking included in rent. Bundle negotiations save money overall.' },
+  ],
+  personal: [
+    { icon: 'bi-scissors', title: 'DIY Beauty Routines', text: 'At-home facials, hair masks, and nail care cost a fraction of salon prices. Try DIY first.' },
+    { icon: 'bi-bag-check', title: 'Buy Multipurpose Products', text: 'Consolidated skincare (SPF moisturiser, tinted lip balm) reduces the number of products needed.' },
+    { icon: 'bi-percent', title: 'Shop Pharmacy Brands', text: 'Pharmacy own-brands (Himalaya, CeraVe at Wellness Forever) are clinically tested and far cheaper.' },
+    { icon: 'bi-calendar3', title: 'Space Out Salon Visits', text: 'Extending time between hair cuts by 2 weeks saves 25–30% on annual salon spend.' },
+  ],
+  travel: [
+    { icon: 'bi-calendar-range', title: 'Book 3–4 Weeks Early', text: 'Flight and train prices typically drop when booked 21–30 days in advance. Set price alerts.' },
+    { icon: 'bi-moon-stars', title: 'Travel Mid-Week', text: 'Tuesday–Thursday flights are 20–30% cheaper than weekend travel. Same for hotel rates.' },
+    { icon: 'bi-backpack', title: 'Pack Light, Avoid Fees', text: 'Carry-on only avoids ₹500–2,000 in baggage fees. Most airlines allow a free cabin bag.' },
+    { icon: 'bi-house-heart', title: 'Try Homestays', text: 'Airbnb/OYO homestays offer more space and kitchen access at 30–50% less than equivalent hotels.' },
+  ],
+  other: [
+    { icon: 'bi-piggy-bank', title: 'Track Every Expense', text: 'People who track spending save 15–20% more. Awareness is the first step to control.' },
+    { icon: 'bi-target', title: 'Use the 50/30/20 Rule', text: 'Allocate 50% to needs, 30% to wants, 20% to savings. Review your ratios monthly.' },
+    { icon: 'bi-bell', title: 'Set Spending Alerts', text: 'Use bank SMS alerts to get notified when you\'ve spent 75% of a category budget.' },
+    { icon: 'bi-graph-up', title: 'Review Monthly', text: 'Spend 15 minutes at month end reviewing where money went. Small leaks sink ships.' },
+  ],
+};
+
+// ─── OPEN BUDGET ANALYSIS ───────────────────────────────────────────────────
+function openBudgetAnalysis(budgetId) {
+  const b = state.budgets.find(b => b.id === budgetId);
+  if (!b) return;
+
+  const cat     = catInfo(b.category);
+  const txns    = getTxnsForMonth(state.viewMonth, state.viewYear).filter(t => t.type === 'expense');
+  const catTxns = state.transactions.filter(t => t.type === 'expense' && t.category === b.category);
+  const monthTxns = txns.filter(t => t.category === b.category);
+  const spent   = monthTxns.reduce((s, t) => s + t.amount, 0);
+  const pct     = (spent / b.amount) * 100;
+  const status  = pct >= 100 ? 'danger' : 'warning';
+  const over    = spent - b.amount;
+
+  // Header
+  document.getElementById('analysisModalTitle').textContent = `${cat.label} — Budget Analysis`;
+  document.getElementById('analysisSubtitle').textContent = `${MONTHS[state.viewMonth]} ${state.viewYear}`;
+  const iconEl = document.getElementById('analysisCatIcon');
+  iconEl.style.background = cat.bg;
+  iconEl.style.color = cat.color;
+  iconEl.innerHTML = `<i class="bi ${cat.icon}"></i>`;
+
+  // Status banner
+  const banner = document.getElementById('analysisStatusBanner');
+  if (status === 'danger') {
+    banner.className = 'analysis-status-banner danger';
+    banner.innerHTML = `<i class="bi bi-exclamation-octagon-fill"></i>
+      <div><strong>Over Budget by ${fmt(Math.abs(over))}</strong><br>You've spent ${pct.toFixed(0)}% of your ${cat.label} budget this month.</div>`;
+  } else {
+    banner.className = 'analysis-status-banner warning';
+    banner.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i>
+      <div><strong>Approaching Budget Limit — ${pct.toFixed(0)}% Used</strong><br>Only ${fmt(b.amount - spent)} remaining for ${cat.label} this month.</div>`;
+  }
+
+  // Metrics
+  let lm = state.viewMonth - 1, ly = state.viewYear;
+  if (lm < 0) { lm = 11; ly--; }
+  const lastMonthSpent = state.transactions
+    .filter(t => { const d = new Date(t.date + 'T00:00:00'); return d.getMonth() === lm && d.getFullYear() === ly && t.type === 'expense' && t.category === b.category; })
+    .reduce((s, t) => s + t.amount, 0);
+  const momChg = lastMonthSpent > 0 ? (((spent - lastMonthSpent) / lastMonthSpent) * 100).toFixed(1) : null;
+  const dailyAvg = monthTxns.length > 0 ? (spent / new Date().getDate()).toFixed(0) : 0;
+  const projectedEnd = parseFloat(dailyAvg) * new Date(state.viewYear, state.viewMonth + 1, 0).getDate();
+
+  document.getElementById('analysisMetrics').innerHTML = `
+    <div class="analysis-metric-card">
+      <div class="am-icon" style="background:${cat.bg};color:${cat.color}"><i class="bi bi-currency-rupee"></i></div>
+      <div class="am-value">${fmt(spent)}</div>
+      <div class="am-label">Spent This Month</div>
+    </div>
+    <div class="analysis-metric-card">
+      <div class="am-icon" style="background:hsla(0,84%,60%,0.15);color:#EF4444"><i class="bi bi-bullseye"></i></div>
+      <div class="am-value">${fmt(b.amount)}</div>
+      <div class="am-label">Monthly Budget</div>
+    </div>
+    <div class="analysis-metric-card">
+      <div class="am-icon" style="background:hsla(38,92%,50%,0.15);color:#F59E0B"><i class="bi bi-calendar-day"></i></div>
+      <div class="am-value">${fmt(dailyAvg)}</div>
+      <div class="am-label">Daily Average</div>
+    </div>
+    <div class="analysis-metric-card">
+      <div class="am-icon" style="background:hsla(258,90%,66%,0.15);color:#8B5CF6"><i class="bi bi-graph-up-arrow"></i></div>
+      <div class="am-value" style="color:${projectedEnd > b.amount ? '#EF4444' : '#22C55E'}">${fmt(projectedEnd)}</div>
+      <div class="am-label">Projected Month-End</div>
+    </div>
+    ${momChg !== null ? `
+    <div class="analysis-metric-card">
+      <div class="am-icon" style="background:hsla(${parseFloat(momChg) > 0 ? '0,84%,60%' : '142,71%,45%'},0.15);color:${parseFloat(momChg) > 0 ? '#EF4444' : '#22C55E'}"><i class="bi bi-arrow-${parseFloat(momChg) > 0 ? 'up' : 'down'}-circle"></i></div>
+      <div class="am-value" style="color:${parseFloat(momChg) > 0 ? '#EF4444' : '#22C55E'}">${parseFloat(momChg) > 0 ? '+' : ''}${momChg}%</div>
+      <div class="am-label">vs Last Month</div>
+    </div>` : ''}
+  `;
+
+  // Trend chart (last 6 months)
+  const trendLabels = [], trendData = [];
+  for (let i = 5; i >= 0; i--) {
+    let m = state.viewMonth - i, y = state.viewYear;
+    while (m < 0) { m += 12; y--; }
+    trendLabels.push(MONTHS[m].slice(0, 3));
+    trendData.push(state.transactions.filter(t => {
+      const d = new Date(t.date + 'T00:00:00');
+      return d.getMonth() === m && d.getFullYear() === y && t.type === 'expense' && t.category === b.category;
+    }).reduce((s, t) => s + t.amount, 0));
+  }
+
+  if (state.charts.analysisTrend) state.charts.analysisTrend.destroy();
+  const trendCtx = document.getElementById('analysisTrendChart');
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)';
+  const textColor = isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)';
+  const budgetLine = Array(6).fill(b.amount);
+
+  state.charts.analysisTrend = new Chart(trendCtx, {
+    type: 'bar',
+    data: {
+      labels: trendLabels,
+      datasets: [
+        {
+          label: 'Spent',
+          data: trendData,
+          backgroundColor: trendData.map((v, i) => i === 5 && v > b.amount ? 'rgba(239,68,68,0.75)' : cat.color + 'BB'),
+          borderColor: trendData.map((v, i) => i === 5 && v > b.amount ? '#EF4444' : cat.color),
+          borderWidth: 1.5,
+          borderRadius: 6,
+          borderSkipped: false,
+        },
+        {
+          label: 'Budget Limit',
+          data: budgetLine,
+          type: 'line',
+          borderColor: '#EF4444',
+          borderDash: [6, 4],
+          borderWidth: 2,
+          pointRadius: 0,
+          fill: false,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: textColor, usePointStyle: true, pointStyle: 'circle', font: { family: 'Inter', size: 11 } } },
+        tooltip: { backgroundColor: '#1e1e2e', titleColor: '#fff', bodyColor: '#aaa', padding: 10,
+          callbacks: { label: ctx => ` ${ctx.dataset.label}: ${fmt(ctx.parsed.y)}` } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: textColor, font: { family: 'Inter', size: 11 } } },
+        y: { grid: { color: gridColor }, ticks: { color: textColor, font: { family: 'Inter', size: 10 }, callback: v => '₹' + (v >= 1000 ? (v/1000).toFixed(0)+'k' : v) } }
+      }
+    }
+  });
+
+  // Recent transactions for this category this month
+  const sortedTxns = [...monthTxns].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const txnListEl = document.getElementById('analysisTxnList');
+  if (sortedTxns.length === 0) {
+    txnListEl.innerHTML = `<div class="analysis-empty"><i class="bi bi-inbox"></i><p>No transactions found</p></div>`;
+  } else {
+    txnListEl.innerHTML = sortedTxns.map(t => `
+      <div class="analysis-txn-item">
+        <div class="analysis-txn-date">${fmtDate(t.date)}</div>
+        <div class="analysis-txn-desc">${escHtml(t.description)}</div>
+        <div class="analysis-txn-amount">${fmt(t.amount)}</div>
+      </div>`).join('');
+  }
+
+  // Smart Tips
+  const tips = BUDGET_TIPS[b.category] || BUDGET_TIPS['other'];
+  document.getElementById('analysisTipsGrid').innerHTML = tips.map(tip => `
+    <div class="analysis-tip-card">
+      <div class="tip-icon"><i class="bi ${tip.icon}"></i></div>
+      <div class="tip-content">
+        <div class="tip-title">${tip.title}</div>
+        <div class="tip-text">${tip.text}</div>
+      </div>
+    </div>`).join('');
+
+  openModal('budgetAnalysisModal');
+}

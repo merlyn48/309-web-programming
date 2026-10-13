@@ -5,12 +5,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Personal Finance Tracker</title>
-    <meta name="description" content="FinanceFlow is a modern personal finance tracker to manage budgets, track expenses, and visualize your financial health with beautiful charts." />
+    <meta name="description"
+        content="FinanceFlow is a modern personal finance tracker to manage budgets, track expenses, and visualize your financial health with beautiful charts." />
     <meta name="keywords" content="finance tracker, budget planner, expense manager, personal finance" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
@@ -28,8 +30,8 @@
                 <span class="logo-text">FinanceFlow</span>
             </div>
             <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">
-        <i class="bi bi-x-lg"></i>
-      </button>
+                <i class="bi bi-x-lg"></i>
+            </button>
         </div>
 
         <nav class="sidebar-nav" aria-label="Main navigation">
@@ -66,9 +68,9 @@
                 <i class="bi bi-moon-stars-fill"></i>
                 <span>Dark Mode</span>
                 <label class="toggle-switch" aria-label="Toggle theme">
-          <input type="checkbox" id="themeToggle" checked />
-          <span class="slider"></span>
-        </label>
+                    <input type="checkbox" id="themeToggle" checked />
+                    <span class="slider"></span>
+                </label>
             </div>
         </div>
     </aside>
@@ -77,8 +79,8 @@
 
         <header class="topbar">
             <button class="hamburger" id="hamburger" aria-label="Open menu">
-        <i class="bi bi-list"></i>
-      </button>
+                <i class="bi bi-list"></i>
+            </button>
             <div class="topbar-title" id="topbarTitle">Dashboard</div>
         </header>
 
@@ -88,12 +90,15 @@
                 <div class="page-header">
                     <div>
                         <h1 class="page-title">Welcome!</h1>
-                        <p class="page-subtitle">Here's your financial overview for <span id="currentMonthLabel"></span></p>
+                        <p class="page-subtitle">Here's your financial overview for <span id="currentMonthLabel"></span>
+                        </p>
                     </div>
                     <div class="month-selector">
-                        <button class="icon-btn" id="prevMonth" aria-label="Previous month"><i class="bi bi-chevron-left"></i></button>
+                        <button class="icon-btn" id="prevMonth" aria-label="Previous month"><i
+                                class="bi bi-chevron-left"></i></button>
                         <span id="monthDisplay" class="month-label"></span>
-                        <button class="icon-btn" id="nextMonth" aria-label="Next month"><i class="bi bi-chevron-right"></i></button>
+                        <button class="icon-btn" id="nextMonth" aria-label="Next month"><i
+                                class="bi bi-chevron-right"></i></button>
                     </div>
                 </div>
 
@@ -103,7 +108,8 @@
                         <div class="stat-body">
                             <p class="stat-label">Total Income</p>
                             <h2 class="stat-value" id="totalIncome">₹0</h2>
-                            <p class="stat-change positive" id="incomeChange"><i class="bi bi-arrow-up-short"></i> 0%</p>
+                            <p class="stat-change positive" id="incomeChange"><i class="bi bi-arrow-up-short"></i> 0%
+                            </p>
                         </div>
                     </div>
                     <div class="stat-card expense-card">
@@ -111,7 +117,8 @@
                         <div class="stat-body">
                             <p class="stat-label">Total Expenses</p>
                             <h2 class="stat-value" id="totalExpense">₹0</h2>
-                            <p class="stat-change negative" id="expenseChange"><i class="bi bi-arrow-down-short"></i> 0%</p>
+                            <p class="stat-change negative" id="expenseChange"><i class="bi bi-arrow-down-short"></i> 0%
+                            </p>
                         </div>
                     </div>
                     <div class="stat-card balance-card">
@@ -137,9 +144,9 @@
                         <div class="card-header">
                             <h3 class="card-title">Income vs Expenses</h3>
                             <select id="chartPeriod" class="select-sm">
-                <option value="6">Last 6 Months</option>
-                <option value="12">Last 12 Months</option>
-              </select>
+                                <option value="6">Last 6 Months</option>
+                                <option value="12">Last 12 Months</option>
+                            </select>
                         </div>
                         <div class="chart-wrap"><canvas id="lineChart"></canvas></div>
                     </div>
@@ -176,38 +183,41 @@
                         <p class="page-subtitle">Manage and review all your financial records</p>
                     </div>
                     <button class="btn btn-primary" id="addTxnBtn">
-            <i class="bi bi-plus-lg"></i> Add Transaction
-          </button>
+                        <i class="bi bi-plus-lg"></i> Add Transaction
+                    </button>
                 </div>
 
                 <div class="card filters-card">
                     <div class="filters-row">
                         <div class="search-box">
                             <i class="bi bi-search"></i>
-                            <input type="text" id="searchInput" placeholder="Search transactions..." aria-label="Search transactions" />
+                            <input type="text" id="searchInput" placeholder="Search transactions..."
+                                aria-label="Search transactions" />
                         </div>
                         <select id="filterType" class="select-input" aria-label="Filter by type">
-              <option value="all">All Types</option>
-              <option value="income">Income</option>
-              <option value="expense">Expense</option>
-            </select>
+                            <option value="all">All Types</option>
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                        </select>
                         <select id="filterCategory" class="select-input" aria-label="Filter by category">
-              <option value="all">All Categories</option>
-            </select>
+                            <option value="all">All Categories</option>
+                        </select>
                         <select id="sortBy" class="select-input" aria-label="Sort by">
-              <option value="date-desc">Newest First</option>
-              <option value="date-asc">Oldest First</option>
-              <option value="amount-desc">Highest Amount</option>
-              <option value="amount-asc">Lowest Amount</option>
-            </select>
-                        <button class="icon-btn" id="clearFilters" title="Clear filters"><i class="bi bi-funnel-fill"></i></button>
+                            <option value="date-desc">Newest First</option>
+                            <option value="date-asc">Oldest First</option>
+                            <option value="amount-desc">Highest Amount</option>
+                            <option value="amount-asc">Lowest Amount</option>
+                        </select>
+                        <button class="icon-btn" id="clearFilters" title="Clear filters"><i
+                                class="bi bi-funnel-fill"></i></button>
                     </div>
                 </div>
 
                 <div class="card table-card">
                     <div class="table-header-row">
                         <span id="txnCountLabel" class="count-label">0 transactions</span>
-                        <button class="btn btn-ghost btn-sm" id="exportBtn"><i class="bi bi-download"></i> Export CSV</button>
+                        <button class="btn btn-ghost btn-sm" id="exportBtn"><i class="bi bi-download"></i> Export
+                            CSV</button>
                     </div>
                     <div class="table-wrap">
                         <table class="data-table" id="txnTable">
@@ -239,8 +249,8 @@
                         <p class="page-subtitle">Set and track your spending limits per category</p>
                     </div>
                     <button class="btn btn-primary" id="addBudgetBtn">
-            <i class="bi bi-plus-lg"></i> Set Budget
-          </button>
+                        <i class="bi bi-plus-lg"></i> Set Budget
+                    </button>
                 </div>
 
                 <div class="budget-overview-grid">
@@ -316,7 +326,8 @@
         <div class="modal">
             <div class="modal-header">
                 <h2 class="modal-title" id="txnModalTitle">Add Transaction</h2>
-                <button class="modal-close" id="txnModalClose" aria-label="Close modal"><i class="bi bi-x-lg"></i></button>
+                <button class="modal-close" id="txnModalClose" aria-label="Close modal"><i
+                        class="bi bi-x-lg"></i></button>
             </div>
             <form id="txnForm" novalidate>
                 <div class="form-row">
@@ -324,11 +335,11 @@
                         <label for="txnType">Type <span class="required">*</span></label>
                         <div class="type-toggle">
                             <button type="button" class="type-btn active" data-type="expense" id="typeExpense">
-                <i class="bi bi-arrow-up-circle"></i> Expense
-              </button>
+                                <i class="bi bi-arrow-up-circle"></i> Expense
+                            </button>
                             <button type="button" class="type-btn" data-type="income" id="typeIncome">
-                <i class="bi bi-arrow-down-circle"></i> Income
-              </button>
+                                <i class="bi bi-arrow-down-circle"></i> Income
+                            </button>
                         </div>
                         <input type="hidden" id="txnType" value="expense" />
                     </div>
@@ -353,25 +364,27 @@
                 </div>
                 <div class="form-group">
                     <label for="txnDescription">Description <span class="required">*</span></label>
-                    <input type="text" id="txnDescription" placeholder="e.g. Grocery shopping at Big Bazaar" maxlength="100" required />
+                    <input type="text" id="txnDescription" placeholder="e.g. Grocery shopping at Big Bazaar"
+                        maxlength="100" required />
                     <span class="field-error" id="descError"></span>
                 </div>
                 <div class="form-group">
                     <label for="txnCategory">Category <span class="required">*</span></label>
                     <select id="txnCategory" required>
-            <option value="">Select a category</option>
-          </select>
+                        <option value="">Select a category</option>
+                    </select>
                     <span class="field-error" id="catError"></span>
                 </div>
                 <div class="form-group">
                     <label for="txnNote">Note (optional)</label>
-                    <textarea id="txnNote" placeholder="Add any additional notes..." rows="2" maxlength="200"></textarea>
+                    <textarea id="txnNote" placeholder="Add any additional notes..." rows="2"
+                        maxlength="200"></textarea>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-ghost" id="txnCancelBtn">Cancel</button>
                     <button type="submit" class="btn btn-primary" id="txnSubmitBtn">
-            <i class="bi bi-check-lg"></i> Save Transaction
-          </button>
+                        <i class="bi bi-check-lg"></i> Save Transaction
+                    </button>
                 </div>
             </form>
         </div>
@@ -381,14 +394,15 @@
         <div class="modal">
             <div class="modal-header">
                 <h2 class="modal-title" id="budgetModalTitle">Set Budget</h2>
-                <button class="modal-close" id="budgetModalClose" aria-label="Close modal"><i class="bi bi-x-lg"></i></button>
+                <button class="modal-close" id="budgetModalClose" aria-label="Close modal"><i
+                        class="bi bi-x-lg"></i></button>
             </div>
             <form id="budgetForm" novalidate>
                 <div class="form-group">
                     <label for="budgetCategory">Category <span class="required">*</span></label>
                     <select id="budgetCategory" required>
-            <option value="">Select a category</option>
-          </select>
+                        <option value="">Select a category</option>
+                    </select>
                     <span class="field-error" id="budgetCatError"></span>
                 </div>
                 <div class="form-group">
@@ -402,8 +416,8 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-ghost" id="budgetCancelBtn">Cancel</button>
                     <button type="submit" class="btn btn-primary" id="budgetSubmitBtn">
-            <i class="bi bi-check-lg"></i> Save Budget
-          </button>
+                        <i class="bi bi-check-lg"></i> Save Budget
+                    </button>
                 </div>
             </form>
         </div>
@@ -413,7 +427,8 @@
         <div class="modal modal-sm">
             <div class="modal-header">
                 <h2 class="modal-title" id="deleteModalTitle">Confirm Delete</h2>
-                <button class="modal-close" id="deleteModalClose" aria-label="Close modal"><i class="bi bi-x-lg"></i></button>
+                <button class="modal-close" id="deleteModalClose" aria-label="Close modal"><i
+                        class="bi bi-x-lg"></i></button>
             </div>
             <div class="modal-body">
                 <div class="delete-icon"><i class="bi bi-trash3-fill"></i></div>
@@ -422,8 +437,45 @@
             <div class="modal-footer">
                 <button class="btn btn-ghost" id="deleteCancelBtn">Cancel</button>
                 <button class="btn btn-danger" id="deleteConfirmBtn">
-          <i class="bi bi-trash3"></i> Delete
-        </button>
+                    <i class="bi bi-trash3"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="budgetAnalysisModal" role="dialog" aria-modal="true"
+        aria-labelledby="analysisModalTitle">
+        <div class="modal modal-analysis">
+            <div class="modal-header">
+                <div class="analysis-modal-title-wrap">
+                    <div class="analysis-cat-icon" id="analysisCatIcon"></div>
+                    <div>
+                        <h2 class="modal-title" id="analysisModalTitle">Budget Analysis</h2>
+                        <p class="analysis-subtitle" id="analysisSubtitle"></p>
+                    </div>
+                </div>
+                <button class="modal-close" id="analysisModalClose" aria-label="Close modal"><i
+                        class="bi bi-x-lg"></i></button>
+            </div>
+
+            <div class="analysis-status-banner" id="analysisStatusBanner"></div>
+
+            <div class="analysis-metrics" id="analysisMetrics"></div>
+
+            <div class="analysis-body-grid">
+                <div class="analysis-section">
+                    <h4 class="analysis-section-title"><i class="bi bi-bar-chart-fill"></i> Monthly Spending Trend</h4>
+                    <div class="analysis-chart-wrap"><canvas id="analysisTrendChart"></canvas></div>
+                </div>
+                <div class="analysis-section">
+                    <h4 class="analysis-section-title"><i class="bi bi-list-ul"></i> Recent Transactions</h4>
+                    <div class="analysis-txn-list" id="analysisTxnList"></div>
+                </div>
+            </div>
+
+            <div class="analysis-tips-section">
+                <h4 class="analysis-section-title"><i class="bi bi-lightbulb-fill"></i> Smart Budgeting Tips</h4>
+                <div class="analysis-tips-grid" id="analysisTipsGrid"></div>
             </div>
         </div>
     </div>
